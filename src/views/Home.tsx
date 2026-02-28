@@ -1,24 +1,19 @@
-import type {MediaItemWithOwner} from 'hybrid-types/DBTypes';
-import {useState} from 'react';
 import {useMedia} from '../hooks/apiHooks';
-import {FlatList, Text} from 'react-native';
+import {FlatList} from 'react-native';
 import MediaListItem from '../components/MediaListItem';
+import {NavigationProp, ParamListBase} from '@react-navigation/native';
 
-const Home = () => {
-  const [selectedItem, setSelectedItem] = useState<
-    MediaItemWithOwner | undefined
-  >(undefined);
-
+const Home = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
   const {mediaArray} = useMedia();
 
   return (
-    <>
-      <Text>Home view</Text>
-      <FlatList
-        data={mediaArray}
-        renderItem={({item}) => <MediaListItem item={item} />}
-      />
-    </>
+    <FlatList
+      data={mediaArray}
+      renderItem={({item}) => (
+        <MediaListItem item={item} navigation={navigation} />
+      )}
+      keyExtractor={(item) => item.media_id.toString()}
+    />
   );
 };
 

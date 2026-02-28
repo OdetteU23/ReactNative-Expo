@@ -11,6 +11,10 @@ type AuthContextType = {
     handleLogout: () => void;
     handleAutoLogin: () => void;
 };
+type RootParamList = {
+  Home: undefined;
+  Single: {item: MediaItemWithOwner};
+};
 
 /*type Credentials =  {
     username: string;
@@ -38,4 +42,4 @@ type CommentStore = {
    addComment: (comment: Partial<Comment & {username: string}>) => void;
 };
 
-export type {MediaItemWithOwner, LikeState, LikeAction, AuthContextType, Credentials, CommentStore, RegisterCredentials, LikesType};
+export type {MediaItemWithOwner, LikeState, LikeAction, AuthContextType, Credentials, CommentStore, RegisterCredentials, LikesType, RootParamList};

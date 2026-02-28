@@ -13,8 +13,10 @@ const MediaListItem = ({
       style={styles.container}
       onPress={() => {
         console.log('touched ' + item.title);
-        navigation.navigate('Media File', {item});
+        //navigation.navigate('Media File', {item});
+        navigation.navigate('Single');
       }}
+
     >
       <Text style= {styles.title}> {item.title}</Text>
       <Image style={styles.image} source= {{uri: item.thumbnail}}></Image>
@@ -25,7 +27,9 @@ const MediaListItem = ({
       <Text>Filesize: {(item.filesize /1024 /1024).toFixed(2)} MB</Text>
       <Text>Mime-type: {item.media_type}</Text>
       <Text>Created at: {new Date(item.created_at).toLocaleDateString('fi-FI')}</Text>
+
       {/* TODO = HOMEWORK: add all other media data and style your list & listitems */}
+        {/* TODO = HOMEWORK: add navigation to single view */}
     </TouchableOpacity>
   );
 };

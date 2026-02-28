@@ -1,13 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, Platform } from 'react-native';
+import { StyleSheet} from 'react-native';
+//import {Text, Platform } from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import Home from './src/views/Home';
+//import Home from './src/views/Home';
+import { Navigators } from './src/navigators/navigators';
 
 export default function App() {
   console.log("Welcome to rnExpo!");
   return (
     <SafeAreaProvider style={styles.container}>
-      <Home />
+      {/* <Home /> */}
+      <Navigators />
       {/* <Text>Open up App.tsx to start working on your app!</Text> */}
       <StatusBar style="auto" />
     </SafeAreaProvider>

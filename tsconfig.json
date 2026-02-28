@@ -2,5 +2,15 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true
+  },
+  "scopes": {
+    "@expo/metro-runtime": ["./node_modules/@expo/metro-runtime"]
+  },
+  "scripts": {
+    //"dev": true,
+    "start": true,
+    "dev": "run",
+    "build": true,
+    "test": true
   }
 }
