@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from '../views/Home';
 import Profile from '../views/Profile';
 import Single from '../views/Single';
+import Upload from '../views/Upload';
 import Login from '../views/Login';
 import { useUserContext } from '../hooks/ContextHooks';
 
@@ -14,6 +15,7 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Home" component={Home} options={{headerShown: false}} />
+      <Tab.Screen name="Upload" component={Upload} />
       <Tab.Screen name="My Profile" component={Profile} />
     </Tab.Navigator>
   );

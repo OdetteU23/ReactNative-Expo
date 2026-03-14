@@ -3,18 +3,39 @@ import {useCallback, useEffect, useState} from 'react';
 import {fetchData} from '../Utils/fetch-data';
 //import type {Credentials, RegisterCredentials} from '../Utilis/types/localTypes';
 import type { Credentials, RegisterCredentials } from '../Utils/types/localTypes';
-import type {AvailableResponse, LoginResponse, MediaResponse, MessageResponse, UserResponse} from 'hybrid-types/MessageTypes';
-import type {UploadResponse} from 'hybrid-types/MessageTypes';
+import type {AvailableResponse, LoginResponse, MediaResponse, UploadResponse, MessageResponse, UserResponse} from 'hybrid-types/MessageTypes';
 
-const useMedia = () => {
+import {File} from 'expo-file-system';
+import {useUpdateContext} from './ContextHooks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const useMedia = (instance = false, ownFiles = false) => {
   const [mediaArray, setMediaArray] = useState<MediaItemWithOwner[]>([]);
+  const {update} = useUpdateContext();
+  // const {getMediaByTagName} = useTag();
 
   useEffect(() => {
     const getMedia = async () => {
+      if (!instance) {
+        return;
+      }
       try {
+        const endpoint = ownFiles ? '/media/bytoken' : '/media';
+
+        const options = {
+          method: 'GET',
+          headers: {
+            Authorization: 'Bearer ' + (await AsyncStorage.getItem('token')),
+          },
+        };
+
         const media = await fetchData<MediaItem[]>(
-          process.env.EXPO_PUBLIC_MEDIA_API + '/media',
+          process.env.EXPO_PUBLIC_MEDIA_API + endpoint,
+          options,
         );
+
+        // const media = await getMediaByTagName('defrtyhjuiklo');
+
         const mediaWithOwners = await Promise.all<MediaItemWithOwner>(
           media.map(async (item) => {
             try {
@@ -36,14 +57,14 @@ const useMedia = () => {
           }),
         );
         setMediaArray(mediaWithOwners);
-        console.log(mediaWithOwners);
       } catch (error) {
         console.error(error);
       }
     };
 
     getMedia();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [update]);
 
   const postMedia = async (
     file: UploadResponse,
@@ -87,6 +108,7 @@ const useAuthentication = () => {
       process.env.EXPO_PUBLIC_AUTH_API + '/auth/login',
       fetchOptions,
     );
+    // console.log(loginResult);
     return loginResult;
   };
 
@@ -104,7 +126,7 @@ const useUser = () => {
       },
       body: JSON.stringify(inputs),
     };
-    const registerResult = await fetchData<UserResponse>(resourceUrl, fetchOptions);
+    const registerResult = await fetchData(resourceUrl, fetchOptions);
     return registerResult;
   };
 
@@ -131,10 +153,16 @@ const useUser = () => {
     return fetchData<AvailableResponse>(`${resourceUrl}/email/${email}`);
   };
 
-  return {postRegister, getUserByToken, getUsernameAvailable, getEmailAvailable};
+  return {
+    postRegister,
+    getUserByToken,
+    getUsernameAvailable,
+    getEmailAvailable,
+  };
 };
 
 const useFile = () => {
+  const [loading, setLoading] = useState(false);
   const postFile = async (file: File, token: string) => {
     // create FormData object
     const formData = new FormData();
@@ -149,13 +177,14 @@ const useFile = () => {
       },
       body: formData,
     };
-    return fetchData<UploadResponse>(
+    const result = await fetchData<UploadResponse>(
       process.env.EXPO_PUBLIC_UPLOAD_API + '/upload',
       options,
     );
+    return result;
   };
 
-  return {postFile};
+  return {postFile, loading, setLoading};
 };
 
 const useLike = () => {
@@ -175,6 +204,7 @@ const useLike = () => {
   };
 
   const deleteLike = async (like_id: number, token: string) => {
+    // TODO: Send a DELETE request to /likes/:like_id with the token in the Authorization header.
     const fetchOptions = {
       method: 'DELETE',
       headers: {
@@ -182,18 +212,20 @@ const useLike = () => {
       },
     };
     return fetchData<MessageResponse>(
-      process.env.EXPO_PUBLIC_MEDIA_API + `/likes/${like_id}`,
+      process.env.EXPO_PUBLIC_MEDIA_API + '/likes/' + like_id,
       fetchOptions,
     );
   };
 
   const getCountByMediaId = async (media_id: number) => {
-      return fetchData<{count: number}>(
-        process.env.EXPO_PUBLIC_MEDIA_API + `/likes/count/${media_id}`,
-      );
+    // TODO: Send a GET request to /likes/count/:media_id to get the number of likes.
+    return fetchData<{count: number}>(
+      process.env.EXPO_PUBLIC_MEDIA_API + '/likes/count/' + media_id,
+    );
   };
 
   const getUserLike = async (media_id: number, token: string) => {
+    // TODO: Send a GET request to /likes/bymedia/user/:media_id to get the user's like on the media.
     const fetchOptions = {
       method: 'GET',
       headers: {
@@ -201,51 +233,88 @@ const useLike = () => {
       },
     };
     return fetchData<Like>(
-      process.env.EXPO_PUBLIC_MEDIA_API + `/likes/bymedia/user/${media_id}`,
+      process.env.EXPO_PUBLIC_MEDIA_API + '/likes/bymedia/user/' + media_id,
       fetchOptions,
     );
   };
 
-  const useComment = () => {
-   const postComment = async (
-      comment_text: string,
-      media_id: number,
-      token: string) => {
-        const fetchOptions = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token,
-          },
-          body: JSON.stringify({comment_text, media_id}),
-        };
-        return fetchData<MessageResponse>(
-          process.env.EXPO_PUBLIC_MEDIA_API + '/comments',
-          fetchOptions,
-        );
-   };
-
-   const getCommentsByMediaId = async (media_id: number) => {
-       // TODO: Send a GET request to /comments/bymedia/:media_id to get the comments.
-       const comments = await fetchData<Comment[]>(
-        process.env.EXPO_PUBLIC_MEDIA_API + '/comments/byMedia/' + media_id,);
-
-       // TODO: Send a GET request to auth api and add username to all comments
-       const commentsWithUsername = Promise.all<Comment & {username: string}>(
-        comments.map(async(comment)=> {
-         const userInfo =  await fetchData<UserWithNoPassword>(
-          process.env.EXPO_PUBLIC_AUTH_API + '/users/' + comment.user_id
-        );
-        return {...comment, username:userInfo.username};
-       })
-      );
-       return commentsWithUsername;
-   };
-
-   return { postComment, getCommentsByMediaId };
- };
-
-  return {postLike, deleteLike, getCountByMediaId, getUserLike, useComment};
+  return {postLike, deleteLike, getCountByMediaId, getUserLike};
 };
 
-export {useMedia, useAuthentication, useUser, useFile, useLike};
+const useComment = () => {
+  const postComment = async (
+    comment_text: string,
+    media_id: number,
+    token: string,
+  ) => {
+    // Send a POST request to /comments with the comment object and the token in the Authorization header.
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token,
+      },
+      body: JSON.stringify({media_id, comment_text}),
+    };
+    return fetchData<MessageResponse>(
+      process.env.EXPO_PUBLIC_MEDIA_API + '/comments',
+      fetchOptions,
+    );
+  };
+
+  const getCommentsByMediaId = async (id: number) => {
+    // Send a GET request to /comments/bymedia/:media_id to get the comments.
+    const comments = await fetchData<Comment[]>(
+      process.env.EXPO_PUBLIC_MEDIA_API + '/comments/bymedia/' + id,
+    );
+    // Send a GET requests to auth api and add usernames to all comments
+    const commentsWithUsername = Promise.all<Comment & {username: string}>(
+      comments.map(async (comment) => {
+        const userInfo = await fetchData<UserWithNoPassword>(
+          process.env.EXPO_PUBLIC_AUTH_API + '/users/' + comment.user_id,
+        );
+        return {...comment, username: userInfo.username};
+      }),
+    );
+    return commentsWithUsername;
+  };
+
+  return {postComment, getCommentsByMediaId};
+};
+
+const useTag = () => {
+  const postTag = async (media_id: number, tag_name: string, token: string) => {
+    // Send a POST request to /tags with the tag object and the token in the Authorization header.
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token,
+      },
+      body: JSON.stringify({media_id, tag_name}),
+    };
+    return fetchData<MessageResponse>(
+      process.env.EXPO_PUBLIC_MEDIA_API + '/tags',
+      fetchOptions,
+    );
+  };
+
+  const getMediaByTagName = async (tag_name: string) => {
+    // Send a GET request to /tags/:tag_name to get the media items with the tag.
+    return await fetchData<MediaItem[]>(
+      process.env.EXPO_PUBLIC_MEDIA_API + '/tags/' + tag_name,
+    );
+  };
+
+  return {postTag, getMediaByTagName};
+};
+
+export {
+  useMedia,
+  useAuthentication,
+  useUser,
+  useFile,
+  useLike,
+  useComment,
+  useTag,
+};

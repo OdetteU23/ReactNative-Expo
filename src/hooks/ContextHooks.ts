@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 import {useContext} from 'react';
 import {UserContext} from '../context/UserContext';
-=======
-// ContextHooks.ts
-import {useContext} from 'react';
-import {UserContext} from '../context/UserContext';
-
->>>>>>> comp-lib
+import {UpdateContext} from '../context/UpdateContext';
 // Current recommendation is to use custom hook instead of the context directly
 // this way we don't have errors when UserContext is not defined or null (thats why we have the if statement)
 
@@ -19,4 +13,12 @@ const useUserContext = () => {
   return context;
 };
 
-export {useUserContext};
+const useUpdateContext = () => {
+  const context = useContext(UpdateContext);
+  if (!context) {
+    throw new Error('useUpdateContext must be used within an UpdateProvider');
+  }
+  return context;
+};
+
+export {useUserContext, useUpdateContext};
