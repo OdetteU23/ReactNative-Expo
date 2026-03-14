@@ -1,10 +1,22 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "ignoreDeprecations": "6.0",
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "types": [
+      "nativewind/types"
+    ]
   },
   "scopes": {
-    "@expo/metro-runtime": ["./node_modules/@expo/metro-runtime"]
+    "@expo/metro-runtime": [
+      "./node_modules/@expo/metro-runtime"
+    ]
   },
   "scripts": {
     //"dev": true,
@@ -12,5 +24,11 @@
     "dev": "run",
     "build": true,
     "test": true
-  }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "./index.ts",
+    "nativewind-env.d.ts"
+  ]
 }
