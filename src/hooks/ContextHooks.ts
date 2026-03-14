@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 import {useContext} from 'react';
 import {UserContext} from '../context/UserContext';
+=======
+// ContextHooks.ts
+import {useContext} from 'react';
+import {UserContext} from '../context/UserContext';
+
+>>>>>>> comp-lib
 // Current recommendation is to use custom hook instead of the context directly
 // this way we don't have errors when UserContext is not defined or null (thats why we have the if statement)
 
