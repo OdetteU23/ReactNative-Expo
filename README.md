@@ -1,12 +1,12 @@
 
 ## Week 6
 ### Login/Regoster view in the Emulator:
-  ![Login/register](screenshots/Login.png)
+  ![UI Login/register](screenshots/Login.png)
 ### Home view in the website (npx expo start --web  ):
-  ![Home](screenshots/Home.png)
+  ![UI Home](screenshots/Home.png)
 ### Upload view in the website (npx expo start --web):
-  ![Upload](screenshots/upload.png)
+  ![UI Upload](screenshots/upload.png)
 ### Profile view in the website (npx expo start --web):
-![Profile](screenshots/profile.png)
+![UI Profile](screenshots/profile.png)
 ## Why the website (npx expo start --web ) was used?:
   - I couldn't access fully the expoted expo Go project in the Emulator as the I was unable to use VPN in the Emulator, so I chose the    Website instead.
