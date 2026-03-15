@@ -9,4 +9,4 @@
 ### Profile view in the website (npx expo start --web):
 ![UI Profile](screenshots/profile.png)
 ## Why the website (npx expo start --web ) was used?:
-  - I couldn't access fully the expoted expo Go project in the Emulator as the I was unable to use VPN in the Emulator, so I chose the    Website instead.
+  - I couldn't fully access the expoted expo Go project in the Emulator as I was unable to use VPN in the Emulator, so I chose the   Website instead.
