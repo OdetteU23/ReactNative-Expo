@@ -1,3 +1,5 @@
+import {useEffect} from 'react';
+import {ActivityIndicator, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -22,7 +24,19 @@ const TabNavigator = () => {
 };
 
 const StackNavigator = () => {
-  const {user} = useUserContext();
+  const {user, loading, handleAutoLogin} = useUserContext();
+
+  useEffect(() => {
+    handleAutoLogin();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <Stack.Navigator>

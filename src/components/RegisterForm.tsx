@@ -26,6 +26,7 @@ const RegisterForm = () => {
     getValues,
   } = useForm({
     defaultValues: initValues,
+    mode: 'onBlur',
   });
 
   const doRegister = async (inputs: RegisterCredentials) => {
